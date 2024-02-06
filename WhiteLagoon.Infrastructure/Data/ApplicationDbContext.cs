@@ -27,7 +27,7 @@ public class ApplicationDbContext : DbContext
                 Description = "Description of Royal Villa",
                 ImageUrl = "https://placehold.co/600x400",
                 Occupancy = 4,
-                price = 200,
+                Price = 200,
                 Squarefeet = 550
             },new Villa 
             {
@@ -36,7 +36,7 @@ public class ApplicationDbContext : DbContext
                 Description = "Description of Premium Pool Villa",
                 ImageUrl = "https://placehold.co/600x400",
                 Occupancy = 4,
-                price = 300,
+                Price = 300,
                 Squarefeet = 580
             },new Villa 
             {
@@ -45,7 +45,7 @@ public class ApplicationDbContext : DbContext
                 Description = "Description of Luxury Pool Villa",
                 ImageUrl = "https://placehold.co/600x400",
                 Occupancy = 3,
-                price = 400,
+                Price = 400,
                 Squarefeet = 720
             }
         );
