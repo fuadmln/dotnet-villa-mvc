@@ -55,7 +55,7 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
         _context.VillaNumbers.Add(villaNumberVM.VillaNumber);
         _context.SaveChanges();
         TempData["success"] = "The villa number has been created successfully";
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Update(int villaNumberId)
@@ -95,7 +95,7 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
 		_context.SaveChanges();
         TempData["success"] = "The villa has been updated successfully";
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
 	}
 
 	public IActionResult Delete(int villaNumberId)
@@ -128,6 +128,6 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
         _context.SaveChanges();
         TempData["success"] = "The villa has been deleted successfully";
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 }
