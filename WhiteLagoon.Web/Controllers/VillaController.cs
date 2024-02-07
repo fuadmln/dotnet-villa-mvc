@@ -30,6 +30,7 @@ public class VillaController(ApplicationDbContext context) : Controller
 
         _context.Villas.Add(villa);
         _context.SaveChanges();
+        TempData["success"] = "The villa has been created successfully";
         return RedirectToAction("Index");
     }
 
@@ -37,7 +38,7 @@ public class VillaController(ApplicationDbContext context) : Controller
     {
         Villa? villa = _context.Villas.Find(villaId);
         if (villa == null)
-            return NotFound();
+            return RedirectToAction("Error", "Home");
 
         return View(villa);
     }
@@ -50,15 +51,16 @@ public class VillaController(ApplicationDbContext context) : Controller
 
 		_context.Villas.Update(villa);
 		_context.SaveChanges();
+        TempData["success"] = "The villa has been updated successfully";
 
-		return RedirectToAction("Index");
+        return RedirectToAction("Index");
 	}
 
     public IActionResult Delete(int villaId)
     {
 		Villa? villa = _context.Villas.Find(villaId);
 		if (villa == null)
-			return NotFound();
+			return RedirectToAction("Error", "Home");
 
 		return View(villa);
     }
@@ -68,10 +70,11 @@ public class VillaController(ApplicationDbContext context) : Controller
     {
 		Villa? villaDb = _context.Villas.Find(villa.Id);
         if (villaDb == null)
-            return NotFound();
+            return RedirectToAction("Error", "Home");
 
         _context.Villas.Remove(villaDb);
         _context.SaveChanges();
+        TempData["success"] = "The villa has been deleted successfully";
 
         return RedirectToAction("Index");
     }
