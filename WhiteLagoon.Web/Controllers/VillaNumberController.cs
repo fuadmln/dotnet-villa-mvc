@@ -1,25 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Domain.Entities;
-using WhiteLagoon.Infrastructure.Data;
+using WhiteLagoon.Infrastructure.Repositories;
 using WhiteLagoon.Web.Models.ViewModels;
 
 namespace WhiteLagoon.Web.Controllers;
 
-public class VillaNumberController(ApplicationDbContext context) : Controller
+public class VillaNumberController(IUnitOfWork unitOfWork) : Controller
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public IActionResult Index()
     {
-        var villaNumbers = _context.VillaNumbers.Include(vn => vn.Villa).ToList();
-        return View(villaNumbers);
+        //var villaNumbers = _context.VillaNumbers.Include(vn => vn.Villa).ToList();
+        var villaNumbers = _unitOfWork.VillaNumberRepo.GetAll(includeProperties: "Villa");
+        //var villaNumbers = _unitOfWork.VillaNumberRepo.GetAll();
+
+		return View(villaNumbers);
     }
 
     public IActionResult Create()
     {
-        IEnumerable<SelectListItem> villas = _context.Villas.ToList().Select(v => new SelectListItem
+        //IEnumerable<SelectListItem> villas = _context.Villas.ToList().Select(v => new SelectListItem
+        //{ 
+        //    Text = v.Name,
+        //    Value = v.Id.ToString()
+        //});
+        IEnumerable<SelectListItem> villas = _unitOfWork.VillaRepo.GetAll().Select(v => new SelectListItem
         { 
             Text = v.Name,
             Value = v.Id.ToString()
@@ -36,14 +44,14 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
     [HttpPost]
     public IActionResult Create(VillaNumberVM villaNumberVM)
     {
-		var isVillaNumberExist = _context.VillaNumbers.Any(vn => vn.Villa_Number == villaNumberVM.VillaNumber.Villa_Number);
+		var isVillaNumberExist = _unitOfWork.VillaNumberRepo.GetAll().Any(vn => vn.Villa_Number == villaNumberVM.VillaNumber.Villa_Number);
 
 		if (!ModelState.IsValid || isVillaNumberExist)
         {
 			if (isVillaNumberExist)
 				TempData["error"] = "create failed, villa number already exist";
 
-			villaNumberVM.Villas = _context.Villas.ToList().Select(v => new SelectListItem
+			villaNumberVM.Villas = _unitOfWork.VillaRepo.GetAll().Select(v => new SelectListItem
 			{
 				Text = v.Name,
 				Value = v.Id.ToString()
@@ -52,22 +60,24 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
 			return View(villaNumberVM);
 		}
 
-        _context.VillaNumbers.Add(villaNumberVM.VillaNumber);
-        _context.SaveChanges();
+		_unitOfWork.VillaNumberRepo.Add(villaNumberVM.VillaNumber);
+		_unitOfWork.VillaNumberRepo.Save();
+
         TempData["success"] = "The villa number has been created successfully";
+
         return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Update(int villaNumberId)
     {
-        VillaNumber? villaNumber = _context.VillaNumbers.Find(villaNumberId);
+        VillaNumber? villaNumber = _unitOfWork.VillaNumberRepo.Get(villaNumberId);
         if (villaNumber == null)
             return RedirectToAction("Error", "Home");
 
         VillaNumberVM villaNumberVM = new()
         {
             VillaNumber = villaNumber,
-            Villas = _context.Villas.ToList().Select(v => new SelectListItem
+            Villas = _unitOfWork.VillaRepo.GetAll().Select(v => new SelectListItem
             {
                 Text = v.Name,
                 Value = v.Id.ToString()
@@ -82,7 +92,7 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
 	{
 		if (!ModelState.IsValid)
 		{
-			villaNumberVM.Villas = _context.Villas.ToList().Select(v => new SelectListItem
+			villaNumberVM.Villas = _unitOfWork.VillaRepo.GetAll().Select(v => new SelectListItem
 			{
 				Text = v.Name,
 				Value = v.Id.ToString()
@@ -91,8 +101,9 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
 			return View(villaNumberVM);
 		}
 
-		_context.VillaNumbers.Update(villaNumberVM.VillaNumber);
-		_context.SaveChanges();
+		_unitOfWork.VillaNumberRepo.Update(villaNumberVM.VillaNumber);
+		_unitOfWork.VillaNumberRepo.Save();
+
         TempData["success"] = "The villa has been updated successfully";
 
         return RedirectToAction(nameof(Index));
@@ -100,14 +111,14 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
 
 	public IActionResult Delete(int villaNumberId)
 	{
-		VillaNumber? villaNumber = _context.VillaNumbers.Find(villaNumberId);
+		VillaNumber? villaNumber = _unitOfWork.VillaNumberRepo.Get(villaNumberId);
 		if (villaNumber == null)
 			return RedirectToAction("Error", "Home");
 
 		VillaNumberVM villaNumberVM = new()
 		{
 			VillaNumber = villaNumber,
-			Villas = _context.Villas.ToList().Select(v => new SelectListItem
+			Villas = _unitOfWork.VillaRepo.GetAll().Select(v => new SelectListItem
 			{
 				Text = v.Name,
 				Value = v.Id.ToString()
@@ -120,12 +131,13 @@ public class VillaNumberController(ApplicationDbContext context) : Controller
 	[HttpPost]
     public IActionResult Delete(VillaNumberVM villaNumberVM)
     {
-		VillaNumber? villaNumberDb = _context.VillaNumbers.Find(villaNumberVM.VillaNumber.Villa_Number);
+		VillaNumber? villaNumberDb = _unitOfWork.VillaNumberRepo.Get(villaNumberVM.VillaNumber.Villa_Number);
         if (villaNumberDb == null)
             return RedirectToAction("Error", "Home");
 
-        _context.VillaNumbers.Remove(villaNumberDb);
-        _context.SaveChanges();
+		_unitOfWork.VillaNumberRepo.Remove(villaNumberDb);
+		_unitOfWork.VillaNumberRepo.Save();
+
         TempData["success"] = "The villa has been deleted successfully";
 
         return RedirectToAction(nameof(Index));

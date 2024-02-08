@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WhiteLagoon.Application.Common.Interfaces;
 using WhiteLagoon.Domain.Entities;
-using WhiteLagoon.Infrastructure.Data;
 
 namespace WhiteLagoon.Web.Controllers;
 
-public class VillaController(ApplicationDbContext context) : Controller
+public class VillaController(IUnitOfWork unitOfWork) : Controller
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly IUnitOfWork _uniOfWork = unitOfWork;
 
     public IActionResult Index()
     {
-        var villas = _context.Villas.ToList();
+        var villas = _uniOfWork.VillaRepo.GetAll();
         return View(villas);
     }
 
@@ -28,15 +28,15 @@ public class VillaController(ApplicationDbContext context) : Controller
         if (!ModelState.IsValid)
             return View();
 
-        _context.Villas.Add(villa);
-        _context.SaveChanges();
+		_uniOfWork.VillaRepo.Add(villa);
+		_uniOfWork.VillaRepo.Save();
         TempData["success"] = "The villa has been created successfully";
         return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Update(int villaId)
     {
-        Villa? villa = _context.Villas.Find(villaId);
+        Villa? villa = _uniOfWork.VillaRepo.Get(villaId);
         if (villa == null)
             return RedirectToAction("Error", "Home");
 
@@ -49,8 +49,8 @@ public class VillaController(ApplicationDbContext context) : Controller
 		if (!ModelState.IsValid)
 			return View();
 
-		_context.Villas.Update(villa);
-		_context.SaveChanges();
+		_uniOfWork.VillaRepo.Update(villa);
+		_uniOfWork.VillaRepo.Save();
         TempData["success"] = "The villa has been updated successfully";
 
         return RedirectToAction(nameof(Index));
@@ -58,7 +58,7 @@ public class VillaController(ApplicationDbContext context) : Controller
 
     public IActionResult Delete(int villaId)
     {
-		Villa? villa = _context.Villas.Find(villaId);
+		Villa? villa = _uniOfWork.VillaRepo.Get(villaId);
 		if (villa == null)
 			return RedirectToAction("Error", "Home");
 
@@ -68,12 +68,12 @@ public class VillaController(ApplicationDbContext context) : Controller
 	[HttpPost]
     public IActionResult Delete(Villa villa)
     {
-		Villa? villaDb = _context.Villas.Find(villa.Id);
+		Villa? villaDb = _uniOfWork.VillaRepo.Get(villa.Id);
         if (villaDb == null)
             return RedirectToAction("Error", "Home");
 
-        _context.Villas.Remove(villaDb);
-        _context.SaveChanges();
+		_uniOfWork.VillaRepo.Remove(villaDb);
+		_uniOfWork.VillaRepo.Save();
         TempData["success"] = "The villa has been deleted successfully";
 
         return RedirectToAction(nameof(Index));
