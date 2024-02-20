@@ -13,20 +13,13 @@ public class VillaNumberController(IUnitOfWork unitOfWork) : Controller
 
     public IActionResult Index()
     {
-        //var villaNumbers = _context.VillaNumbers.Include(vn => vn.Villa).ToList();
         var villaNumbers = _unitOfWork.VillaNumberRepo.GetAll(includeProperties: "Villa");
-        //var villaNumbers = _unitOfWork.VillaNumberRepo.GetAll();
 
 		return View(villaNumbers);
     }
 
     public IActionResult Create()
     {
-        //IEnumerable<SelectListItem> villas = _context.Villas.ToList().Select(v => new SelectListItem
-        //{ 
-        //    Text = v.Name,
-        //    Value = v.Id.ToString()
-        //});
         IEnumerable<SelectListItem> villas = _unitOfWork.VillaRepo.GetAll().Select(v => new SelectListItem
         { 
             Text = v.Name,

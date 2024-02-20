@@ -10,4 +10,5 @@ public interface IUnitOfWork
 {
 	IVillaRepository VillaRepo { get; }
 	IVillaNumberRepository VillaNumberRepo { get; }
+	IAmenityRepository AmenityRepo { get; }
 }

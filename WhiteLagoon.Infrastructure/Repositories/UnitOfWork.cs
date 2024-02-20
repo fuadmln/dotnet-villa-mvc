@@ -15,4 +15,6 @@ public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 	public IVillaRepository VillaRepo { get; private set; } = new VillaRepository(context);
 
 	public IVillaNumberRepository VillaNumberRepo { get; private set; } = new VillaNumberRepository(context);
+
+	public IAmenityRepository AmenityRepo { get; private set; } = new AmenityRepository(context);
 }

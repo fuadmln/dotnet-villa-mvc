@@ -7,11 +7,12 @@ using WhiteLagoon.Domain.Entities;
 
 namespace WhiteLagoon.Application.Common.Interfaces;
 
-public interface IVillaNumberRepository : IRepository<VillaNumber>
+public interface IAmenityRepository : IRepository<Amenity>
 {
-	public VillaNumber? Get(int id, string? includeProperties = null);
+	public Amenity? Get(int id, string? includedPropeties);
 
-	public void Update(VillaNumber villaNumber);
+	public void Update(Amenity amenity);
 
 	public void Save();
+
 }
