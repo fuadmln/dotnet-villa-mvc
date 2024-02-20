@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace WhiteLagoon.Domain.Entities;
 
@@ -36,4 +37,7 @@ public class Villa
     public DateTime? CreatedDate { get; set; }
 
     public DateTime? UpdatedDate { get; set; }
+
+    [ValidateNever]
+    public IEnumerable<Amenity>? VillaAmenities { get; set; }
 }
